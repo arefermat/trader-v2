@@ -12,6 +12,10 @@ import os
 import config
 import keyboard
 
+# .a and .b are Alpha and Beta extensions
+CURRENT_VERSION = 2.0.b
+STATS = []
+
 # Alpaca API Credentials
 API_KEY = config.alpaca_api_key
 API_SECRET = config.alpaca_secret_api
@@ -164,7 +168,7 @@ if __name__ == "__main__":
     clear()
     interval = input("Interval : ")
     model_decision = input("Do you want to train a new model or load an existing one")
-    if model_decision == "train":
+    if model_decision == "new":
         clear()
         stock_symbol = input("Stock Symbol : ")
         clear()
@@ -201,7 +205,25 @@ if __name__ == "__main__":
     # Keep the script running
     while True:
         schedule.run_pending()
+        print("1. Save")
+        print("2. Load")
+        print("3. Stats")
+        print("4. Change Stock")
+        # Add more like threading and more training and more complex stuff (v2.1)
+        print(f"Current Version : {CURRENT_VERSION}")
+        decision = input(": ")
+        if decision == "1":
+            file_name = f'trained-models/{input("File Name : ")}' + ".h5"
+            model.save(file_name)
+        elif decision == "2":
+            file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
+            model = model.load(file_name)
+        elif decision == "3":
+            print(STATS)
+
+
+        
         if keyboard.is_pressed("ctrl + p") == True:
             profit, prcntg = get_profit(money, current_qty, starting_money)
-            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg)% increase/decrease"
+            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease"
         time.sleep(0.2)

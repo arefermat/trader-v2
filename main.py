@@ -68,9 +68,16 @@ def build_and_train_model(X_train, y_train, epochs, batch_size, lstm_layer_one_n
         model.add(Dense(units=neurons))
         layerAMT += 1
     model.add(Dense(units=1, activation='sigmoid'))  # Sigmoid for binary classification (Buy/Sell)
-    
+
+    start = time.perf_counter()
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
+    end = time.perf_counter()
+    time_taken = round((end - start), 2)
+    if time_taken > 60:
+        print(f"It took {time_taken} seconds to train your AI")
+    else:
+        print(f"It took {round(time_taken/60, 2)} minutes to train your AI")
     return model
 
 def get_current_price(symbol):
@@ -101,7 +108,10 @@ def predict_action(model, scaler, stock_symbol):
 
 def get_profit(money, current_qty, starting_money):
     profit = money - starting_money
-    profit_prcntg = profit/starting_money
+    profit_prcntg = ((profit - starting_money)/starting-money) * 100
+    return profit, profit_prcntg
+    
+    
 # Execute trades based on the model's prediction
 def trade_based_on_prediction(stock_symbol):
     action = predict_action(model, scaler, stock_symbol)
@@ -145,7 +155,9 @@ def sell_stock(symbol, qty):
 
 # Main program execution
 if __name__ == "__main__":
-    stock_symbol = 'AAPL'
+    stock_symbol = input("Stock Symbol : ")
+    interval = input("Interval : ")
+    
     
     # Fetch and prepare all historical data
     data = fetch_all_data(stock_symbol)
@@ -155,9 +167,13 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train, epochs=10, batch_size=64)
     
     # Schedule trades every 5 minutes
-    schedule.every(5).minutes.do(trade_based_on_prediction, stock_symbol)
+    schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol)
 
     # Keep the script running
     while True:
         schedule.run_pending()
         time.sleep(1)
+        if keyboard.is_pressed("ctrl + s") == True:
+            break
+            profit, prcntg = get_profit()
+            print(f"Profit : {profit}$ \n)

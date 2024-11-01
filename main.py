@@ -8,10 +8,13 @@ from tensorflow.keras.layers import LSTM, Dense, Dropout
 from sklearn.preprocessing import MinMaxScaler
 import schedule
 import time
+import os
+import config
+import keyboard
 
 # Alpaca API Credentials
-API_KEY = 'your_api_key'
-API_SECRET = 'your_api_secret'
+API_KEY = config.alpaca_api_key
+API_SECRET = config.alpaca_secret_api
 BASE_URL = 'https://paper-api.alpaca.markets'
 
 # Initialize Alpaca API

@@ -86,7 +86,7 @@ def get_current_price(symbol):
     return stock_bars[-1].c
 
 # Predict Buy/Sell signals using the model
-def predict_action(model, scaler, stock_symbol):
+def predict_action(model, scaler, stock_symbol, error=0.3):
     # Fetch recent 60 days of stock data
     recent_data = yf.download(stock_symbol, period='60d', interval='1d')
     recent_data['SMA_20'] = recent_data['Close'].rolling(window=20).mean()
@@ -101,10 +101,13 @@ def predict_action(model, scaler, stock_symbol):
     # Predict (1: Buy, 0: Sell)
     action = model.predict(X_recent)
     
-    if action > 0.5:
+    if action >= (0.5+error):
         return 'buy'
-    else:
+    elif action <= (0.5-error):
         return 'sell'
+    else:
+        return 'hold'
+    
 
 def get_profit(money, current_qty, starting_money):
     profit = money - starting_money
@@ -124,12 +127,14 @@ def trade_based_on_prediction(stock_symbol):
     
     # Execute trade based on the action
     if action == 'buy' and current_qty == 0 and money >= get_current_price(stcok_symbol):
-        print(f"Model predicts buy for {stock_symbol}. Placing buy order.")
+        print(f"Trader predicts buy for {stock_symbol}. Placing buy order.")
         buy_stock(stock_symbol, 1)
     elif action == 'sell' and current_qty > 0:
-        print(f"Model predicts sell for {stock_symbol}. Placing sell order.")
+        print(f"Trader predicts sell for {stock_symbol}. Placing sell order.")
         money += (get_current_price(stock_symbol) * current_qyt)
         sell_stock(stock_symbol, current_qty)
+    elif action == 'hold' and current_qty != 0:
+        print("Trader says to hold your stocks.")
 
 # Function to buy stock
 def buy_stock(symbol, qty):

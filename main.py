@@ -20,6 +20,9 @@ BASE_URL = 'https://paper-api.alpaca.markets'
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 
+money = 100
+starting_money = money
+
 # Fetch all historical stock data for a given symbol
 def fetch_all_data(stock_symbol):
     data = yf.download(stock_symbol, period='max', interval='1d')  # Fetch full history
@@ -53,18 +56,27 @@ def prepare_full_data(data, time_step=60):
     return np.array(X), np.array(y), scaler
 
 # Build and train the LSTM model
-def build_and_train_model(X_train, y_train, epochs=10, batch_size=64):
+def build_and_train_model(X_train, y_train, epochs, batch_size, lstm_layer_one_neurons, lstm_layer_two_neurons, dropout, dense_layer_amount, output_layer_neurons, output_layer_mode="sigmoid"):
     model = Sequential()
-    model.add(LSTM(units=50, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
-    model.add(Dropout(0.2))
-    model.add(LSTM(units=50, return_sequences=False))
-    model.add(Dropout(0.2))
-    model.add(Dense(units=25))
+    model.add(LSTM(units=lstm_layer_one_neurons, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
+    model.add(Dropout(dropout))
+    model.add(LSTM(units=lstm_layer_two_neurons, return_sequences=False))
+    model.add(Dropout(dropout))
+    layerAMT = 1
+    for layer in range(dense_layer_amount):
+        neurons = input(f"Dense Layer {layerAMT} neurons : ")
+        model.add(Dense(units=neurons))
+        layerAMT += 1
     model.add(Dense(units=1, activation='sigmoid'))  # Sigmoid for binary classification (Buy/Sell)
     
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
     return model
+
+def get_current_price(symbol):
+    barset = api.get_barset(symbol, 'minute', 1)
+    stock_bars = barset[symbol]
+    return stock_bars[-1].c
 
 # Predict Buy/Sell signals using the model
 def predict_action(model, scaler, stock_symbol):
@@ -87,10 +99,12 @@ def predict_action(model, scaler, stock_symbol):
     else:
         return 'sell'
 
+def get_profit(money, current_qty, starting_money):
+    profit = money - starting_money
+    profit_prcntg = profit/starting_money
 # Execute trades based on the model's prediction
 def trade_based_on_prediction(stock_symbol):
     action = predict_action(model, scaler, stock_symbol)
-    
     # Get current stock position
     try:
         position = api.get_position(stock_symbol)
@@ -99,11 +113,12 @@ def trade_based_on_prediction(stock_symbol):
         current_qty = 0
     
     # Execute trade based on the action
-    if action == 'buy' and current_qty == 0:
+    if action == 'buy' and current_qty == 0 and money >= get_current_price(stcok_symbol):
         print(f"Model predicts buy for {stock_symbol}. Placing buy order.")
         buy_stock(stock_symbol, 1)
     elif action == 'sell' and current_qty > 0:
         print(f"Model predicts sell for {stock_symbol}. Placing sell order.")
+        money += (get_current_price(stock_symbol) * current_qyt)
         sell_stock(stock_symbol, current_qty)
 
 # Function to buy stock

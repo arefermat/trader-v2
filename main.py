@@ -67,7 +67,7 @@ def build_and_train_model(X_train, y_train, epochs, batch_size, lstm_layer_one_n
         neurons = input(f"Dense Layer {layerAMT} neurons : ")
         model.add(Dense(units=neurons))
         layerAMT += 1
-    model.add(Dense(units=1, activation='sigmoid'))  # Sigmoid for binary classification (Buy/Sell)
+    model.add(Dense(units=output_layer_neurons, activation=output_layer_mode))  # Sigmoid for binary classification (Buy/Sell)
 
     start = time.perf_counter()
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
@@ -153,10 +153,34 @@ def sell_stock(symbol, qty):
     )
     print(f"Sold {qty} share(s) of {symbol}")
 
+
 # Main program execution
 if __name__ == "__main__":
-    stock_symbol = input("Stock Symbol : ")
+    clear()
     interval = input("Interval : ")
+    model_decision = input("Do you want to train a new model or load an existing one")
+    if model_decision == "train":
+        clear()
+        stock_symbol = input("Stock Symbol : ")
+        clear()
+        batch_size = input("Batch Size : ")
+        clear()
+        epoch_size = input("Epoch Size : ")
+        clear()
+        dense_layer_amount = input("Amount of Dense Layers : ")
+        clear()
+        lstm_layer_one_units = input("How many units for the first LSTM layer? : ")
+        clear()
+        lstm_layer_two_units = input("How many units for the second LSTM layer?  : ")
+        clear()
+        dropout = (input("Whats your drop out percentage? : ") + print("%")) / 100
+        clear()
+    elif model_decision == "load":
+        clear()
+        file_name = f'trained-models/{input("What's the file directory? ")}'
+        stock_symbol = input("Security: What's your stock symbol? ")
+        model = model.load(file_name)
+
     
     
     # Fetch and prepare all historical data
@@ -164,16 +188,15 @@ if __name__ == "__main__":
     X_train, y_train, scaler = prepare_full_data(data)
     
     # Build and train the model
-    model = build_and_train_model(X_train, y_train, epochs=10, batch_size=64)
+    model = build_and_train_model(X_train, y_train, epochs=epoch_size, batch_size=batch_size, lstm_layer_one_neurons=lstm_layer_one_units, lstm_layer_two_neurons=lstm_layer_two_neurons, dropout=dropout, dense_layer_amount=dense_layer_amount, output_layer_neurons=1)
     
-    # Schedule trades every 5 minutes
+    # Schedule trades every X minutes
     schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol)
 
     # Keep the script running
     while True:
         schedule.run_pending()
-        time.sleep(1)
-        if keyboard.is_pressed("ctrl + s") == True:
-            break
+        if keyboard.is_pressed("ctrl + p") == True:
             profit, prcntg = get_profit()
-            print(f"Profit : {profit}$ \n)
+            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg)% increase/decrease"
+        time.sleep(0.2)

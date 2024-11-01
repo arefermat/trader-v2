@@ -169,16 +169,16 @@ if __name__ == "__main__":
         clear()
         dense_layer_amount = input("Amount of Dense Layers : ")
         clear()
-        lstm_layer_one_units = input("How many units for the first LSTM layer? : ")
+        lstm_layer_one_units = input("Neurons For Layer 1 : ")
         clear()
-        lstm_layer_two_units = input("How many units for the second LSTM layer?  : ")
+        lstm_layer_two_units = input("Neurons For Layer 2  : ")
         clear()
-        dropout = (input("Whats your drop out percentage? : ") + print("%")) / 100
+        dropout = (input("Drop Out Percentage : ")) / 100
         clear()
     elif model_decision == "load":
         clear()
-        file_name = f'trained-models/{input("What's the file directory? ")}'
-        stock_symbol = input("Security: What's your stock symbol? ")
+        file_name = f'trained-models/{input("File Directory : ")}'
+        stock_symbol = input("Security: Stock Symbol : ")
         model = model.load(file_name)
 
     
@@ -197,6 +197,6 @@ if __name__ == "__main__":
     while True:
         schedule.run_pending()
         if keyboard.is_pressed("ctrl + p") == True:
-            profit, prcntg = get_profit()
+            profit, prcntg = get_profit(money, current_qty, starting_money)
             print(f"Profit : {profit}$ \nProfit Percentage : {prcntg)% increase/decrease"
         time.sleep(0.2)

@@ -16,6 +16,8 @@ import keyboard
 CURRENT_VERSION = 2.0.b
 STATS = []
 
+bought, sold, hold = 0
+
 # Alpaca API Credentials
 API_KEY = config.alpaca_api_key
 API_SECRET = config.alpaca_secret_api
@@ -106,10 +108,13 @@ def predict_action(model, scaler, stock_symbol, error=0.3):
     action = model.predict(X_recent)
     
     if action >= (0.5+error):
+        bought += 1
         return 'buy'
     elif action <= (0.5-error):
+        sold += 1
         return 'sell'
     else:
+        hold += 1
         return 'hold'
     
 
@@ -162,16 +167,40 @@ def sell_stock(symbol, qty):
     )
     print(f"Sold {qty} share(s) of {symbol}")
 
-def get_stats(money, original_money, current_qty, current_stock_price, end):
+def get_stats(money, original_money, current_qty, current_stock_price, end, bought, sold, hold):
     profit, profit_prcntg = get_profit(money, starting_money)
-    time_taken = round(end - start, 2)
-    if time_taken > 60:
-        
+    time_taken = round(end - start, 0)
+    if time_taken < 60:
+        print(f"Trader has been running for {time_taken} seconds!")
+    elif time_taken > 3600:
+        hours = 0
+        minutes = 0
+        while True:
+            time_taken -= 3600
+            hours += 1
+            if time_taken < 3600:
+                break
+        while True:
+            time_taken -= 60
+            minutes += 1
+            if time_taken < 60:
+                break
+        print(f"Trader has been running for {hours} hours, {minutes} minutes, and {time_taken} seconds")
+    else:
+        minutes = 0
+        while True:
+            time_taken -= 60
+            minutes += 1
+            if time_taken < 60:
+                break
+        print(f"Trader has been running for {minutes} minutes, and {time_taken} seconds")
+ 
     print(f"Current Money : {money}")
     print(f"Current Amount of Stock : {current_qty}")
     print(f"Profit : {profit}")
     print(f"Profit Percentage : {profit_prcntg}")
     print(f"Current Stock Price : {current_stock_price}")
+    print(f"Trader has bought {bought} times, sold {sell} times, and has held {hold} timed")
 
 # Main program execution
 if __name__ == "__main__":
@@ -218,7 +247,8 @@ if __name__ == "__main__":
         print("1. Save")
         print("2. Load")
         print("3. Stats")
-        print("4. Exit")
+        print("4. Change Error")
+        print("5. Exit")
         # Add more like threading and more training and more complex stuff (v2.1)
         print(f"Current Version : {CURRENT_VERSION}")
         decision = input(": ")
@@ -235,7 +265,7 @@ if __name__ == "__main__":
         elif decision == "3":
             clear()
             get_stats(money, starting_money, current_qty, get_current_price(stock_symbol)
-        elif decision == "4":
+        elif decision == "5":
             clear()
             quit("Exit succesful")
 
@@ -244,4 +274,6 @@ if __name__ == "__main__":
         if keyboard.is_pressed("ctrl + p") == True:
             profit, prcntg = get_profit(money, current_qty, starting_money)
             print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease"
-         time.sleep(0.2)
+
+        schedule.run.all.pending()
+        time.sleep(0.2)

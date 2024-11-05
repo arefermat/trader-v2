@@ -13,7 +13,7 @@ import config
 import keyboard
 
 # .a and .b are Alpha and Beta extensions
-CURRENT_VERSION = 2.0.b
+CURRENT_VERSION = "2.0.b"
 
 bought, sold, hold = 0
 
@@ -92,6 +92,7 @@ def get_current_price(symbol):
 
 # Predict Buy/Sell signals using the model
 def predict_action(model, scaler, stock_symbol, error=0.3):
+    global bought, sold, hold
     # Fetch recent 60 days of stock data
     recent_data = yf.download(stock_symbol, period='60d', interval='1d')
     recent_data['SMA_20'] = recent_data['Close'].rolling(window=20).mean()
@@ -119,13 +120,13 @@ def predict_action(model, scaler, stock_symbol, error=0.3):
 
 def get_profit(money, starting_money):
     profit = money - starting_money
-    profit_prcntg = ((profit - starting_money)/starting-money) * 100
+    profit_prcntg = (profit/starting-money) * 100
     return profit, profit_prcntg
     
     
 # Execute trades based on the model's prediction
-def trade_based_on_prediction(stock_symbol):
-    action = predict_action(model, scaler, stock_symbol)
+def trade_based_on_prediction(stock_symbol, error):
+    action = predict_action(model, scaler, stock_symbol, error)
     # Get current stock position
     try:
         position = api.get_position(stock_symbol)
@@ -134,15 +135,19 @@ def trade_based_on_prediction(stock_symbol):
         current_qty = 0
     
     # Execute trade based on the action
-    if action == 'buy' and current_qty == 0 and money >= get_current_price(stcok_symbol):
+    if action == 'buy' and current_qty == 0 and money >= get_current_price(stock_symbol):
         print(f"Trader predicts buy for {stock_symbol}. Placing buy order.")
         buy_stock(stock_symbol, 1)
     elif action == 'sell' and current_qty > 0:
         print(f"Trader predicts sell for {stock_symbol}. Placing sell order.")
-        money += (get_current_price(stock_symbol) * current_qyt)
+        money += (get_current_price(stock_symbol) * current_qty)
         sell_stock(stock_symbol, current_qty)
     elif action == 'hold' and current_qty != 0:
         print("Trader says to hold your stocks.")
+
+def load_model(filename):
+    tf.keras.models.load_model(filename)
+
 
 # Function to buy stock
 def buy_stock(symbol, qty):
@@ -166,7 +171,7 @@ def sell_stock(symbol, qty):
     )
     print(f"Sold {qty} share(s) of {symbol}")
 
-def get_stats(money, original_money, current_qty, current_stock_price, end, bought, sold, hold):
+def get_stats(money, original_money, current_qty, current_stock_price, start, end, bought, sold, hold):
     profit, profit_prcntg = get_profit(money, starting_money)
     time_taken = round(end - start, 0)
     if time_taken < 60:
@@ -226,7 +231,7 @@ if __name__ == "__main__":
         clear()
         file_name = f'trained-models/{input("File Directory : ")}'
         stock_symbol = input("Security: Stock Symbol : ")
-        model = model.load(file_name)
+        model = load_model(file_name)
 
     
     
@@ -259,11 +264,13 @@ if __name__ == "__main__":
         elif decision == "2":
             clear()
             file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
-            model = model.load(file_name)
+            model = load_model(file_name)
             print("New Model Loaded")
         elif decision == "3":
             clear()
-            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), time.perf_counter(), bought, sold, hold
+            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
+        elif decision == "4":
+            new_error = input("New Error : ")
         elif decision == "5":
             clear()
             quit("Exit succesful")
@@ -272,7 +279,6 @@ if __name__ == "__main__":
         
         if keyboard.is_pressed("ctrl + p") == True:
             profit, prcntg = get_profit(money, current_qty, starting_money)
-            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease"
+            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease")
 
-        schedule.run.all.pending()
         time.sleep(0.2)

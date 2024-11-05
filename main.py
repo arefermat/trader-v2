@@ -219,14 +219,15 @@ if __name__ == "__main__":
         clear()
         epoch_size = input("Epoch Size : ")
         clear()
-        dense_layer_amount = input("Amount of Dense Layers : ")
-        clear()
         lstm_layer_one_units = input("Neurons For Layer 1 : ")
         clear()
         lstm_layer_two_units = input("Neurons For Layer 2  : ")
         clear()
+        dense_layer_amount = input("Amount of Dense Layers : ")
+        clear()
         dropout = (input("Drop Out Percentage : ")) / 100
         clear()
+        error = input("Error : ")
     elif model_decision == "load":
         clear()
         file_name = f'trained-models/{input("File Directory : ")}'
@@ -243,7 +244,7 @@ if __name__ == "__main__":
     model = build_and_train_model(X_train, y_train, epochs=epoch_size, batch_size=batch_size, lstm_layer_one_neurons=lstm_layer_one_units, lstm_layer_two_neurons=lstm_layer_two_neurons, dropout=dropout, dense_layer_amount=dense_layer_amount, output_layer_neurons=1)
     
     # Schedule trades every X minutes
-    schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol)
+    schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol, error=error)
     start = time.perf_counter()
     # Keep the script running
     while True:
@@ -271,6 +272,7 @@ if __name__ == "__main__":
             get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
         elif decision == "4":
             new_error = input("New Error : ")
+            error = new_error
         elif decision == "5":
             clear()
             quit("Exit succesful")

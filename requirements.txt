@@ -1,3 +1,8 @@
 yfinance
-alpaca_trade_api
+pandas
+numpy
+alpaca-trade-api
 tensorflow
+scikit-learn
+schedule
+keyboard

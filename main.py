@@ -14,7 +14,6 @@ import keyboard
 
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = 2.0.b
-STATS = []
 
 bought, sold, hold = 0
 
@@ -200,7 +199,7 @@ def get_stats(money, original_money, current_qty, current_stock_price, end, boug
     print(f"Profit : {profit}")
     print(f"Profit Percentage : {profit_prcntg}")
     print(f"Current Stock Price : {current_stock_price}")
-    print(f"Trader has bought {bought} times, sold {sell} times, and has held {hold} timed")
+    print(f"Trader has bought {bought} times, sold {sell} times, and has held {hold} times")
 
 # Main program execution
 if __name__ == "__main__":
@@ -264,7 +263,7 @@ if __name__ == "__main__":
             print("New Model Loaded")
         elif decision == "3":
             clear()
-            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol)
+            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), time.perf_counter(), bought, sold, hold
         elif decision == "5":
             clear()
             quit("Exit succesful")

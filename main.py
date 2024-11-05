@@ -113,7 +113,7 @@ def predict_action(model, scaler, stock_symbol, error=0.3):
         return 'hold'
     
 
-def get_profit(money, current_qty, starting_money):
+def get_profit(money, starting_money):
     profit = money - starting_money
     profit_prcntg = ((profit - starting_money)/starting-money) * 100
     return profit, profit_prcntg
@@ -162,6 +162,16 @@ def sell_stock(symbol, qty):
     )
     print(f"Sold {qty} share(s) of {symbol}")
 
+def get_stats(money, original_money, current_qty, current_stock_price, end):
+    profit, profit_prcntg = get_profit(money, starting_money)
+    time_taken = round(end - start, 2)
+    if time_taken > 60:
+        
+    print(f"Current Money : {money}")
+    print(f"Current Amount of Stock : {current_qty}")
+    print(f"Profit : {profit}")
+    print(f"Profit Percentage : {profit_prcntg}")
+    print(f"Current Stock Price : {current_stock_price}")
 
 # Main program execution
 if __name__ == "__main__":
@@ -201,29 +211,37 @@ if __name__ == "__main__":
     
     # Schedule trades every X minutes
     schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol)
-
+    start = time.perf_counter()
     # Keep the script running
     while True:
         schedule.run_pending()
         print("1. Save")
         print("2. Load")
         print("3. Stats")
-        print("4. Change Stock")
+        print("4. Exit")
         # Add more like threading and more training and more complex stuff (v2.1)
         print(f"Current Version : {CURRENT_VERSION}")
         decision = input(": ")
         if decision == "1":
+            clear()
             file_name = f'trained-models/{input("File Name : ")}' + ".h5"
             model.save(file_name)
+            print("Model saved")
         elif decision == "2":
+            clear()
             file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
             model = model.load(file_name)
+            print("New Model Loaded")
         elif decision == "3":
-            print(STATS)
+            clear()
+            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol)
+        elif decision == "4":
+            clear()
+            quit("Exit succesful")
 
 
         
         if keyboard.is_pressed("ctrl + p") == True:
             profit, prcntg = get_profit(money, current_qty, starting_money)
             print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease"
-        time.sleep(0.2)
+         time.sleep(0.2)

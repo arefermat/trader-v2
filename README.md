@@ -1,5 +1,3 @@
-markdown
-Copy code
 # Stock Trading Bot with LSTM and Alpaca API
 
 This repository contains a stock trading bot that uses LSTM (Long Short-Term Memory) neural networks for predicting stock price movements and automates trading using Alpaca's paper trading API.

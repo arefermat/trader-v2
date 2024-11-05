@@ -47,9 +47,11 @@ To access Alpaca's trading API, you'll need to provide your Alpaca API key and s
 Create a config.py file in the root directory.
 Add the following lines to your config.py:
 
+```
 alpaca_api_key = 'YOUR_ALPACA_API_KEY'
 alpaca_secret_api = 'YOUR_ALPACA_SECRET_KEY'
 Replace 'YOUR_ALPACA_API_KEY' and 'YOUR_ALPACA_SECRET_KEY' with the actual credentials from your Alpaca account.
+```
 
 ### 4. Preparing to Run
 Once you have installed the required libraries and set up your Alpaca API credentials, you can proceed to run the script.

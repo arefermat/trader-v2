@@ -18,8 +18,8 @@ class gragh():
   def scatter_plot(x, y):
     mpl.scatter(x, y)
 
-  def line_plot():
-    pass
+  def line_plot(x, y):
+    mpl.plot(x, y)
 
   def bar_graph():
     pass

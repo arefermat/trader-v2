@@ -11,6 +11,7 @@ import time
 import os
 import config
 import keyboard
+import data-prep as dp
 
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = "2.0.b"
@@ -253,7 +254,10 @@ if __name__ == "__main__":
         print("2. Load")
         print("3. Stats")
         print("4. Change Error")
-        print("5. Exit")
+        print("5. Save Data")
+        print("6. Load Data Table")
+        print("7. Graphing")
+        print("8. Exit")
         # Add more like threading and more training and more complex stuff (v2.1)
         print(f"Current Version : {CURRENT_VERSION}")
         decision = input(": ")
@@ -271,16 +275,24 @@ if __name__ == "__main__":
             clear()
             get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
         elif decision == "4":
+            clear()
             new_error = input("New Error : ")
             error = new_error
         elif decision == "5":
             clear()
+            # Not done yet, add drop out to data table
+            dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
+            print("Saved Data To Table")
+        elif decision == "6":
+            with open("data/data.md", "r") as data:
+                for i in range(len(data.readlines)):
+                    print(data.readlines())
+        elif decision == "7":
+            pass
+        elif decision == "8":
+            clear()
             quit("Exit succesful")
-
-
-        
-        if keyboard.is_pressed("ctrl + p") == True:
-            profit, prcntg = get_profit(money, current_qty, starting_money)
-            print(f"Profit : {profit}$ \nProfit Percentage : {prcntg}% increase/decrease")
+        else:
+            pass
 
         time.sleep(0.2)

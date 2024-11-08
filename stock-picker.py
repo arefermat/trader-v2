@@ -32,13 +32,13 @@ class logistic_regresion():
     b -= learning_rate * db
     return w, b
 
-  def train(x, y, num_iterations, learning_rate):
+  def train(X, y, num_iterations, learning_rate):
     n_features = X.shape[1]
     w, b = initialize_parameters(n_features)
     
     for i in range(num_iterations):
       # Predict
-      y_hat = model(X, w, b)
+      y_hat = predict(X, w, b)
         
       # Compute loss
       loss = compute_loss(y, y_hat)
@@ -55,13 +55,15 @@ class logistic_regresion():
     return w, b
 
 
-  def predict(x, w, b):
-    y_actual = model(x, w, b)
+  def predict(X, w, b):
+    y_actual = model(X, w, b)
     y_predicted = [1 if i > 0.5 else 0 for i in y_hat]
     return np.array(y_pred)
 
 
 
 def find_best_stock(stock_list):
-  for i in range(stock_list):
-    yf.fetch_data()
+  for stock_data in range(stock_list):
+    data = yf.download(stock_data, period="1mo")
+    
+    logistic_regresion.train(data, 

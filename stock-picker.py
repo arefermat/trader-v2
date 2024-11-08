@@ -1,6 +1,6 @@
 import numpy
 import pandas
-import yfinance
+import yfinance as yf
 import keyboard
 import os
 
@@ -60,3 +60,8 @@ class logistic_regresion():
     y_predicted = [1 if i > 0.5 else 0 for i in y_hat]
     return np.array(y_pred)
 
+
+
+def find_best_stock(stock_list):
+  for i in range(stock_list):
+    yf.fetch_data()

@@ -11,6 +11,7 @@ import time
 import os
 import config
 import keyboard
+import threading as ted
 import data-prep as dp
 
 # .a and .b are Alpha and Beta extensions
@@ -207,6 +208,58 @@ def get_stats(money, original_money, current_qty, current_stock_price, start, en
     print(f"Current Stock Price : {current_stock_price}")
     print(f"Trader has bought {bought} times, sold {sell} times, and has held {hold} times")
 
+def decision_picking():
+    global decision
+        print("1. Save")
+        print("2. Load")
+        print("3. Stats")
+        print("4. Change Error")
+        print("5. Save Data")
+        print("6. Load Data Table")
+        print("7. Graphing")
+        print("8. Threading")
+        print("9. More Training")
+        print("Exit (ESC)")
+        # Add more like threading and more training and more complex stuff (v2.1)
+        print(f"Current Version : {CURRENT_VERSION}")
+        
+        decision = input(": ")
+        if decision == "1":
+            clear()
+            file_name = f'trained-models/{input("File Name : ")}' + ".h5"
+            model.save(file_name)
+            print("Model saved")
+        elif decision == "2":
+            clear()
+            file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
+            model = load_model(file_name)
+            print("New Model Loaded")
+        elif decision == "3":
+            clear()
+            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
+        elif decision == "4":
+            clear()
+            new_error = input("New Error : ")
+            error = new_error
+        elif decision == "5":
+            clear()
+            # Not done yet, add drop out to data table
+            dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
+            print("Saved Data To Table")
+        elif decision == "6":
+            with open("data/data.md", "r") as data:
+                for i in range(len(data.readlines)):
+                    print(data.readlines())
+        elif decision == "7":
+            pass
+        # When Clcik ESC button, exit program
+        elif decision == "ESC":
+            clear()
+            quit("Exit succesful")
+        else:
+            pass
+
+
 # Main program execution
 if __name__ == "__main__":
     clear()
@@ -246,53 +299,13 @@ if __name__ == "__main__":
     
     # Schedule trades every X minutes
     schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol, error=error)
+    dice = ted.Thread(target=decision_picking)
     start = time.perf_counter()
     # Keep the script running
     while True:
+        dice.start()
+        if decision == "NULL":
+            pass
+        clear()
         schedule.run_pending()
-        print("1. Save")
-        print("2. Load")
-        print("3. Stats")
-        print("4. Change Error")
-        print("5. Save Data")
-        print("6. Load Data Table")
-        print("7. Graphing")
-        print("8. Exit")
-        # Add more like threading and more training and more complex stuff (v2.1)
-        print(f"Current Version : {CURRENT_VERSION}")
-        decision = input(": ")
-        if decision == "1":
-            clear()
-            file_name = f'trained-models/{input("File Name : ")}' + ".h5"
-            model.save(file_name)
-            print("Model saved")
-        elif decision == "2":
-            clear()
-            file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
-            model = load_model(file_name)
-            print("New Model Loaded")
-        elif decision == "3":
-            clear()
-            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
-        elif decision == "4":
-            clear()
-            new_error = input("New Error : ")
-            error = new_error
-        elif decision == "5":
-            clear()
-            # Not done yet, add drop out to data table
-            dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
-            print("Saved Data To Table")
-        elif decision == "6":
-            with open("data/data.md", "r") as data:
-                for i in range(len(data.readlines)):
-                    print(data.readlines())
-        elif decision == "7":
-            pass
-        elif decision == "8":
-            clear()
-            quit("Exit succesful")
-        else:
-            pass
-
         time.sleep(0.2)

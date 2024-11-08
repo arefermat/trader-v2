@@ -32,7 +32,7 @@ class logistic_regresion():
     b -= learning_rate * db
     return w, b
 
-  def train(X, y, num_iterations, learning_rate):
+  def train(x, y, num_iterations, learning_rate):
     n_features = X.shape[1]
     w, b = initialize_parameters(n_features)
     
@@ -53,4 +53,10 @@ class logistic_regresion():
           print(f"Iteration {i}: Loss = {loss}")
     
     return w, b
+
+
+  def predict(x, w, b):
+    y_actual = model(x, w, b)
+    y_predicted = [1 if i > 0.5 else 0 for i in y_hat]
+    return np.array(y_pred)
 

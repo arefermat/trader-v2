@@ -7,6 +7,7 @@ import os
 class logistic_regresion():
   def __init__(self):
     pass
+    
   def sigmoid(z):
     return 1 / 1 + (np.exp(-z))
 
@@ -29,5 +30,27 @@ class logistic_regresion():
   def update_parameters(w, b, dw, db, learning_rate):
     w -= learning_rate * dw
     b -= learning_rate * db
+    return w, b
+
+  def train(X, y, num_iterations, learning_rate):
+    n_features = X.shape[1]
+    w, b = initialize_parameters(n_features)
+    
+    for i in range(num_iterations):
+      # Predict
+      y_hat = model(X, w, b)
+        
+      # Compute loss
+      loss = compute_loss(y, y_hat)
+        
+      # Compute gradients
+      dw, db = compute_gradients(X, y, y_hat)
+        
+      # Update parameters
+      w, b = update_parameters(w, b, dw, db, learning_rate)
+        
+      if i % 100 == 0:
+          print(f"Iteration {i}: Loss = {loss}")
+    
     return w, b
 

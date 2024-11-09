@@ -236,7 +236,7 @@ def decision_picking():
             print("New Model Loaded")
         elif decision == "3":
             clear()
-            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold
+            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold)
         elif decision == "4":
             clear()
             new_error = input("New Error : ")
@@ -251,8 +251,13 @@ def decision_picking():
                 for i in range(len(data.readlines)):
                     print(data.readlines())
         elif decision == "7":
+            graph_dec == input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
+            #Add if statments and grapghing functionality
+        elif decision == "8":
             pass
-        # When Clcik ESC button, exit program
+        elif decision == "9":
+            pass
+        # When click ESC button, exit program
         elif decision == "ESC":
             clear()
             quit("Exit succesful")
@@ -302,10 +307,10 @@ if __name__ == "__main__":
     dice = ted.Thread(target=decision_picking)
     start = time.perf_counter()
     # Keep the script running
-    while True:
+    while True
+        schedule.run_pending()
         dice.start()
         if decision == "NULL":
             pass
         clear()
-        schedule.run_pending()
         time.sleep(0.2)

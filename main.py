@@ -15,7 +15,7 @@ import threading as ted
 import data-prep as dp
 
 # .a and .b are Alpha and Beta extensions
-CURRENT_VERSION = "2.0.b"
+CURRENT_VERSION = "2.1.b"
 
 bought, sold, hold = 0
 
@@ -254,15 +254,23 @@ def decision_picking():
             graph_dec == input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
             #Add if statments and grapghing functionality
         elif decision == "8":
-            pass
+            clear()
+            print("Threading is only currently under Development. \n**Will be released in v2.2**")
         elif decision == "9":
-            pass
+            clear()
+            print("More Training is only currently under Development. \n**Will be released in v2.2**")
         # When click ESC button, exit program
         elif decision == "ESC":
             clear()
-            quit("Exit succesful")
-        else:
-            pass
+            try:
+                if keyboard.is_pressed("ctrl + s"):
+                    quit("Exit succesful")
+                else:
+                    pass
+            except:
+                pass
+                
+       
 
 
 # Main program execution
@@ -287,13 +295,13 @@ if __name__ == "__main__":
         dropout = (input("Drop Out Percentage : ")) / 100
         clear()
         error = input("Error : ")
+        clear()
     elif model_decision == "load":
         clear()
         file_name = f'trained-models/{input("File Directory : ")}'
         stock_symbol = input("Security: Stock Symbol : ")
         model = load_model(file_name)
 
-    
     
     # Fetch and prepare all historical data
     data = fetch_all_data(stock_symbol)

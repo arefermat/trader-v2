@@ -30,6 +30,23 @@ api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 money = 100
 starting_money = money
 
+graph_axis = {
+    "L1N" : lstm_layer_one_units,
+    "L2N" :  lstm_layer_two_units, 
+    "D1N", 
+    "D2N", 
+    "D3N",
+    "D4N", 
+    "D5N",
+    "DO",
+    "BS",
+    "ES", 
+    "ER", 
+    "TTB", 
+    "TR"
+}
+
+
 # Fetch all historical stock data for a given symbol
 def fetch_all_data(stock_symbol):
     data = yf.download(stock_symbol, period='max', interval='1d')  # Fetch full history
@@ -261,12 +278,16 @@ def decision_picking():
             dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
             print("Saved Data To Table")
         elif decision == "6":
+            clear()
             with open("data/data.md", "r") as data:
                 for i in range(len(data.readlines)):
                     print(data.readlines())
         elif decision == "7":
-            graph_dec == input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
-            #Add if statments and grapghing functionality
+            clear()
+            graph_dec = input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
+            if graph_dec == "1":
+                x = input("What's your X-Axis (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+                
         elif decision == "8":
             clear()
             print("Threading is only currently under Development. \n**Will be released in v2.2**")

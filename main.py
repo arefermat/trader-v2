@@ -63,12 +63,26 @@ def prepare_full_data(data, time_step=60):
     return np.array(X), np.array(y), scaler
 
 # Build and train the LSTM model
-def build_and_train_model(X_train, y_train, epochs, batch_size, lstm_layer_one_neurons, lstm_layer_two_neurons, dropout, dense_layer_amount, output_layer_neurons, output_layer_mode="sigmoid"):
+def build_and_train_model(X_train, y_train):
     model = Sequential()
+    
+    clear()
+    batch_size = input("Batch Size : ")
+    clear()
+    epoch_size = input("Epoch Size : ")
+    clear()
+    dropout = (input("Drop Out Percentage : ")) / 100
+    clear()
+    lstm_layer_one_units = input("Neurons For Layer 1 : ")
     model.add(LSTM(units=lstm_layer_one_neurons, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
     model.add(Dropout(dropout))
+    clear()
+    lstm_layer_two_units = input("Neurons For Layer 2  : ")
     model.add(LSTM(units=lstm_layer_two_neurons, return_sequences=False))
     model.add(Dropout(dropout))
+    clear()
+    dense_layer_amount = input("Amount of Dense Layers (Max : 5) : ")
+    clear()
     layerAMT = 1
     for layer in range(dense_layer_amount):
         neurons = input(f"Dense Layer {layerAMT} neurons : ")
@@ -78,7 +92,7 @@ def build_and_train_model(X_train, y_train, epochs, batch_size, lstm_layer_one_n
 
     start = time.perf_counter()
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
-    model.fit(X_train, y_train, epochs=epochs, batch_size=batch_size)
+    model.fit(X_train, y_train, epochs=epoch_size, batch_size=batch_size)
     end = time.perf_counter()
     time_taken = round((end - start), 2)
     if time_taken > 60:
@@ -276,39 +290,26 @@ def decision_picking():
 # Main program execution
 if __name__ == "__main__":
     clear()
+    model_decision = input("Do you want to train a new model or load an existing one (new/load) : ")
+    clear()
     interval = input("Interval : ")
-    model_decision = input("Do you want to train a new model or load an existing one")
+    clear()
+    stock_symbol = input("Stock Symbol : ")
+    clear()
+    error = input("Error : ")
+    clear()
     if model_decision == "new":
         clear()
-        stock_symbol = input("Stock Symbol : ")
-        clear()
-        batch_size = input("Batch Size : ")
-        clear()
-        epoch_size = input("Epoch Size : ")
-        clear()
-        lstm_layer_one_units = input("Neurons For Layer 1 : ")
-        clear()
-        lstm_layer_two_units = input("Neurons For Layer 2  : ")
-        clear()
-        dense_layer_amount = input("Amount of Dense Layers : ")
-        clear()
-        dropout = (input("Drop Out Percentage : ")) / 100
-        clear()
-        error = input("Error : ")
-        clear()
+        data = fetch_all_data(stock_symbol)
+        X_train, y_train, scaler = prepare_full_data(data)
+        model = build_and_train_model(X_train, y_train)
     elif model_decision == "load":
         clear()
         file_name = f'trained-models/{input("File Directory : ")}'
-        stock_symbol = input("Security: Stock Symbol : ")
         model = load_model(file_name)
 
     
-    # Fetch and prepare all historical data
-    data = fetch_all_data(stock_symbol)
-    X_train, y_train, scaler = prepare_full_data(data)
     
-    # Build and train the model
-    model = build_and_train_model(X_train, y_train, epochs=epoch_size, batch_size=batch_size, lstm_layer_one_neurons=lstm_layer_one_units, lstm_layer_two_neurons=lstm_layer_two_neurons, dropout=dropout, dense_layer_amount=dense_layer_amount, output_layer_neurons=1)
     
     # Schedule trades every X minutes
     schedule.every(interval).minutes.do(trade_based_on_prediction, stock_symbol, error=error)
@@ -318,7 +319,7 @@ if __name__ == "__main__":
     while True
         schedule.run_pending()
         dice.start()
-        if decision == "NULL":
+        if decision == "":
             pass
         clear()
         time.sleep(0.2)

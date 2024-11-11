@@ -26,25 +26,37 @@ BASE_URL = 'https://paper-api.alpaca.markets'
 
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
+denseone, densetwo, densethree, densefour, densefive = 0
 
 money = 100
 starting_money = money
 
 graph_axis = {
     "L1N" : lstm_layer_one_units,
-    "L2N" :  lstm_layer_two_units, 
-    "D1N", 
-    "D2N", 
-    "D3N",
-    "D4N", 
-    "D5N",
-    "DO",
-    "BS",
-    "ES", 
-    "ER", 
-    "TTB", 
-    "TR"
+    "L2N" : lstm_layer_two_units, 
+    "D1N" : denseone, 
+    "D2N" : densetwo, 
+    "D3N" : densethree,
+    "D4N" : densefour, 
+    "D5N" : densefive,
+    "DO" : dropout,
+    "BS" : batch_size,
+    "ES" : epoch_size, 
+    "ER" : error, 
+    "TTB" : ttb, 
+    "TR" : time_function
 }
+
+def time_functions():
+    seconds, minutes, hours = get_stats()
+    if minutes == -1 and hours == -1:
+        timed = [seconds, -1, -1]
+    elif hours == -1 and minutes != -1:
+        timed = [seconds, minutes, -1]
+    else:
+        timed = [seconds, minutes, hours]
+            
+        
 
 
 # Fetch all historical stock data for a given symbol
@@ -82,7 +94,6 @@ def prepare_full_data(data, time_step=60):
 # Build and train the LSTM model
 def build_and_train_model(X_train, y_train):
     model = Sequential()
-    
     clear()
     batch_size = input("Batch Size : ")
     clear()
@@ -102,7 +113,19 @@ def build_and_train_model(X_train, y_train):
     clear()
     layerAMT = 1
     for layer in range(dense_layer_amount):
-        neurons = input(f"Dense Layer {layerAMT} neurons : ")
+        neurons = int(input(f"Dense Layer {layerAMT} neurons : "))
+        if layer == 1:
+            denseone = neurons
+        elif layer == 2:
+            densetwo = neurons
+        elif layer == 3:
+            densethree = neurons
+        elif layer == 4:
+            densefour = neurons
+        elif layer == 5:
+            densefive = neurons
+        else:
+            print("BRUH WTH")
         model.add(Dense(units=neurons))
         layerAMT += 1
     model.add(Dense(units=output_layer_neurons, activation=output_layer_mode))  # Sigmoid for binary classification (Buy/Sell)
@@ -116,7 +139,7 @@ def build_and_train_model(X_train, y_train):
         print(f"It took {time_taken} seconds to train your AI")
     else:
         print(f"It took {round(time_taken/60, 2)} minutes to train your AI")
-    return model
+    return model, end
 
 def get_current_price(symbol):
     barset = api.get_barset(symbol, 'minute', 1)
@@ -209,6 +232,7 @@ def get_stats(money, original_money, current_qty, current_stock_price, start, en
     time_taken = round(end - start, 0)
     if time_taken < 60:
         print(f"Trader has been running for {time_taken} seconds!")
+        return time_taken, -1, -1
     elif time_taken > 3600:
         hours = 0
         minutes = 0
@@ -223,6 +247,8 @@ def get_stats(money, original_money, current_qty, current_stock_price, start, en
             if time_taken < 60:
                 break
         print(f"Trader has been running for {hours} hours, {minutes} minutes, and {time_taken} seconds")
+        
+        return time_taken, minutes, hours
     else:
         minutes = 0
         while True:
@@ -231,6 +257,8 @@ def get_stats(money, original_money, current_qty, current_stock_price, start, en
             if time_taken < 60:
                 break
         print(f"Trader has been running for {minutes} minutes, and {time_taken} seconds")
+        
+        return  time_taken, minutes, -1
  
     print(f"Current Money : {money}")
     print(f"Current Amount of Stock : {current_qty}")
@@ -287,7 +315,9 @@ def decision_picking():
             graph_dec = input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
             if graph_dec == "1":
                 x = input("What's your X-Axis (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
-                
+                if x == "HELP": 
+                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+                x_axis = graph_axis[x]
         elif decision == "8":
             clear()
             print("Threading is only currently under Development. \n**Will be released in v2.2**")
@@ -323,7 +353,7 @@ if __name__ == "__main__":
         clear()
         data = fetch_all_data(stock_symbol)
         X_train, y_train, scaler = prepare_full_data(data)
-        model = build_and_train_model(X_train, y_train)
+        model, ttb = build_and_train_model(X_train, y_train)
     elif model_decision == "load":
         clear()
         file_name = f'trained-models/{input("File Directory : ")}'

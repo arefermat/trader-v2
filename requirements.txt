@@ -6,3 +6,5 @@ tensorflow
 scikit-learn
 schedule
 keyboard
+seaborn
+matplotlib.pyplot

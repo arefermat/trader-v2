@@ -275,7 +275,7 @@ def decision_picking():
         print("4. Change Error")
         print("5. Save Data")
         print("6. Load Data Table")
-        print("7. Graphing")
+        print("7. Live Graphing")
         print("8. Threading")
         print("9. More Training")
         print("Exit (ESC)")
@@ -314,10 +314,30 @@ def decision_picking():
             clear()
             graph_dec = input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
             if graph_dec == "1":
-                x = input("What's your X-Axis (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+                x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
                 if x == "HELP": 
                     print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
                 x_axis = graph_axis[x]
+                y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+                if y == "HELP": 
+                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+                y_axis = graph_axis[y]
+                graph = dp.graph.line_plot(x_axis, y_axis)
+                graph_ted = ted.Thread(target=dp.graph.appendAndUpdate.scatter_plot, graph, x_axis, y_axis, graph_axis[y], graph_axis[x])
+                graph_ted.start()
+            elif graph_dec == "2":
+                x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+                if x == "HELP": 
+                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+                x_axis = graph_axis[x]
+                y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+                if y == "HELP": 
+                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+                y_axis = graph_axis[y]
+                graph = dp.graph.scatter_plot(x_axis, y_axis)
+                graph_ted = ted.Thread(target=dp.graph.appendAndUpdate.scatter_plot, graph, x_axis, y_axis, graph_axis[y], graph_axis[x])
+                graph_ted.start()
+                
         elif decision == "8":
             clear()
             print("Threading is only currently under Development. \n**Will be released in v2.2**")

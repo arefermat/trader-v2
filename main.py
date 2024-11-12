@@ -15,7 +15,7 @@ import threading as ted
 import data-prep as dp
 
 # .a and .b are Alpha and Beta extensions
-CURRENT_VERSION = "2.1.b"
+CURRENT_VERSION = "2.1.a"
 
 bought, sold, hold = 0
 

@@ -24,6 +24,12 @@ API_KEY = config.alpaca_api_key
 API_SECRET = config.alpaca_secret_api
 BASE_URL = 'https://paper-api.alpaca.markets'
 
+elec = input("Will you be using this with the physical trader hub? (Y/N) : ")
+if elec == "Y":
+    elec = True
+elif elec == "N":
+    elec = False
+
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 denseone, densetwo, densethree, densefour, densefive = 0
@@ -55,8 +61,14 @@ def time_functions():
         timed = [seconds, minutes, -1]
     else:
         timed = [seconds, minutes, hours]
-            
-        
+
+
+def if_elec(elec):
+    if elec == True:
+        # Find some way to transfer data from .ino to main through either file pr some sortpf system
+        pass
+    else:
+        pass
 
 
 # Fetch all historical stock data for a given symbol

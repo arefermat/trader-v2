@@ -13,6 +13,7 @@ import config
 import keyboard
 import threading as ted
 import data-prep as dp
+from electronics import fullHubCode
 
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = "2.1.a"

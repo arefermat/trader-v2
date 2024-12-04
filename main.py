@@ -1,4 +1,4 @@
-import yfinance as yf
+simport yfinance as yf
 import numpy as np
 import pandas as pd
 import alpaca_trade_api as tradeapi
@@ -292,7 +292,6 @@ def decision_picking():
         print("8. Threading")
         print("9. More Training")
         print("Exit (ESC)")
-        # Add more like threading and more training and more complex stuff (v2.1)
         print(f"Current Version : {CURRENT_VERSION}")
         
         decision = input(": ")

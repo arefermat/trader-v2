@@ -1,10 +1,10 @@
-simport yfinance as yf
+import yfinance as yf
 import numpy as np
 import pandas as pd
 import alpaca_trade_api as tradeapi
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense, Dropout
+from keras._tf_keras.keras.models import Sequential
+from keras._tf_keras.keras.layers import LSTM, Dense, Dropout
 from sklearn.preprocessing import MinMaxScaler
 import schedule
 import time
@@ -12,8 +12,6 @@ import os
 import config
 import keyboard
 import threading as ted
-import data-prep as dp
-from electronics import fullHubCode
 
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = "2.1.a"
@@ -25,36 +23,19 @@ API_KEY = config.alpaca_api_key
 API_SECRET = config.alpaca_secret_api
 BASE_URL = 'https://paper-api.alpaca.markets'
 
-elec = input("Will you be using this with the physical trader hub? (Y/N) : ")
-if elec == "Y":
-    elec = True
-elif elec == "N":
-    elec = False
-
 # Initialize Alpaca API
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 denseone, densetwo, densethree, densefour, densefive = 0
 
 money = 100
 starting_money = money
+current_qty = 0
 
-graph_axis = {
-    "L1N" : lstm_layer_one_units,
-    "L2N" : lstm_layer_two_units, 
-    "D1N" : denseone, 
-    "D2N" : densetwo, 
-    "D3N" : densethree,
-    "D4N" : densefour, 
-    "D5N" : densefive,
-    "DO" : dropout,
-    "BS" : batch_size,
-    "ES" : epoch_size, 
-    "ER" : error, 
-    "TTB" : ttb, 
-    "TR" : time_function
-}
+def clear():
+    os.system("cls")
 
 def time_functions():
+    global timed
     seconds, minutes, hours = get_stats()
     if minutes == -1 and hours == -1:
         timed = [seconds, -1, -1]
@@ -62,14 +43,6 @@ def time_functions():
         timed = [seconds, minutes, -1]
     else:
         timed = [seconds, minutes, hours]
-
-
-def if_elec(elec):
-    if elec == True:
-        # Find some way to transfer data from .ino to main through either file pr some sortpf system
-        pass
-    else:
-        pass
 
 
 # Fetch all historical stock data for a given symbol
@@ -105,7 +78,10 @@ def prepare_full_data(data, time_step=60):
     return np.array(X), np.array(y), scaler
 
 # Build and train the LSTM model
-def build_and_train_model(X_train, y_train):
+def build_and_train_model(X_train, y_train, output_layer_neurons, output_layer_mode):
+    global denseone, densetwo, densethree, densefour, densefive
+    global lstm_layer_one_units, lstm_layer_two_units
+    global epoch_size, batch_size, dropout
     model = Sequential()
     clear()
     batch_size = input("Batch Size : ")
@@ -115,18 +91,17 @@ def build_and_train_model(X_train, y_train):
     dropout = (input("Drop Out Percentage : ")) / 100
     clear()
     lstm_layer_one_units = input("Neurons For Layer 1 : ")
-    model.add(LSTM(units=lstm_layer_one_neurons, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
+    model.add(LSTM(units=lstm_layer_one_units, return_sequences=True, input_shape=(X_train.shape[1], X_train.shape[2])))
     model.add(Dropout(dropout))
     clear()
     lstm_layer_two_units = input("Neurons For Layer 2  : ")
-    model.add(LSTM(units=lstm_layer_two_neurons, return_sequences=False))
+    model.add(LSTM(units=lstm_layer_two_units, return_sequences=False))
     model.add(Dropout(dropout))
     clear()
     dense_layer_amount = input("Amount of Dense Layers (Max : 5) : ")
     clear()
-    layerAMT = 1
     for layer in range(dense_layer_amount):
-        neurons = int(input(f"Dense Layer {layerAMT} neurons : "))
+        neurons = int(input(f"Dense Layer {layer} neurons : "))
         if layer == 1:
             denseone = neurons
         elif layer == 2:
@@ -189,7 +164,7 @@ def predict_action(model, scaler, stock_symbol, error=0.3):
 
 def get_profit(money, starting_money):
     profit = money - starting_money
-    profit_prcntg = (profit/starting-money) * 100
+    profit_prcntg = (profit/starting_money) * 100
     return profit, profit_prcntg
     
     
@@ -240,7 +215,7 @@ def sell_stock(symbol, qty):
     )
     print(f"Sold {qty} share(s) of {symbol}")
 
-def get_stats(money, original_money, current_qty, current_stock_price, start, end, bought, sold, hold):
+def get_stats(money, original_money, current_qty, current_stock_price,  bought, sold, hold, start, end,):
     profit, profit_prcntg = get_profit(money, starting_money)
     time_taken = round(end - start, 0)
     if time_taken < 60:
@@ -282,73 +257,73 @@ def get_stats(money, original_money, current_qty, current_stock_price, start, en
 
 def decision_picking():
     global decision
-        print("1. Save")
-        print("2. Load")
-        print("3. Stats")
-        print("4. Change Error")
-        print("5. Save Data")
-        print("6. Load Data Table")
-        print("7. Live Graphing")
-        print("8. Threading")
-        print("9. More Training")
-        print("Exit (ESC)")
-        print(f"Current Version : {CURRENT_VERSION}")
+    print("1. Save")
+    print("2. Load")
+    print("3. Stats")
+    print("4. Change Error")
+    print("5. Save Data")
+    print("6. Load Data Table")
+    print("7. Live Graphing")
+    print("8. Threading")
+    print("9. More Training")
+    print("Exit (ESC)")
+    print(f"Current Version : {CURRENT_VERSION}")
         
-        decision = input(": ")
-        if decision == "1":
-            clear()
-            file_name = f'trained-models/{input("File Name : ")}' + ".h5"
-            model.save(file_name)
-            print("Model saved")
-        elif decision == "2":
-            clear()
-            file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
-            model = load_model(file_name)
-            print("New Model Loaded")
-        elif decision == "3":
-            clear()
-            get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), start, end=time.perf_counter(), bought, sold, hold)
-        elif decision == "4":
-            clear()
-            new_error = input("New Error : ")
-            error = new_error
-        elif decision == "5":
-            clear()
-            # Not done yet, add drop out to data table
-            dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
-            print("Saved Data To Table")
-        elif decision == "6":
-            clear()
-            with open("data/data.md", "r") as data:
-                for i in range(len(data.readlines)):
-                    print(data.readlines())
-        elif decision == "7":
-            clear()
-            graph_dec = input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
-            if graph_dec == "1":
-                x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
-                if x == "HELP": 
-                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
-                x_axis = graph_axis[x]
-                y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
-                if y == "HELP": 
-                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
-                y_axis = graph_axis[y]
-                graph = dp.graph.line_plot(x_axis, y_axis)
-                graph_ted = ted.Thread(target=dp.graph.appendAndUpdate.scatter_plot, graph, x_axis, y_axis, graph_axis[y], graph_axis[x])
-                graph_ted.start()
-            elif graph_dec == "2":
-                x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
-                if x == "HELP": 
-                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
-                x_axis = graph_axis[x]
-                y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
-                if y == "HELP": 
-                    print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
-                y_axis = graph_axis[y]
-                graph = dp.graph.scatter_plot(x_axis, y_axis)
-                graph_ted = ted.Thread(target=dp.graph.appendAndUpdate.scatter_plot, graph, x_axis, y_axis, graph_axis[y], graph_axis[x])
-                graph_ted.start()
+    decision = input(": ")
+    if decision == "1":
+        clear()
+        file_name = f'trained-models/{input("File Name : ")}' + ".h5"
+        model.save(file_name)
+        print("Model saved")
+    elif decision == "2":
+        clear()
+        file_name = f'trained-models/{input("File Directory : ")}' + ".h5"
+        model = load_model(file_name)
+        print("New Model Loaded")
+    elif decision == "3":
+        clear()
+        get_stats(money, starting_money, current_qty, get_current_price(stock_symbol), bought, sold, hold, start, end=time.perf_counter())
+    elif decision == "4":
+        clear()
+        new_error = input("New Error : ")
+        error = new_error
+    elif decision == "5":
+        clear()
+        # Not done yet, add drop out to data table
+        #dp.save_data_to_table(lstm_layer_one_units, lstm_layer_two_units)
+        print("Saved Data To Table")
+    elif decision == "6":
+        clear()
+        with open("data/data.md", "r") as data:
+            for i in range(len(data.readlines)):
+                print(data.readlines())
+    elif decision == "7":
+        clear()
+        graph_dec = input("1. Line Plot \n2. Scatter Plot \3. 3D graph \n4. Back")
+        if graph_dec == "1":
+            x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+            if x == "HELP": 
+                print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+            x_axis = graph_axis[x]
+            y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+            if y == "HELP": 
+                print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+            #y_axis = graph_axis[y]
+            #graph = dp.graph.line_plot(x_axis, y_axis)
+            #graph_ted = ted.Thread(graph, x_axis, y_axis, graph_axis[y], graph_axis[x], target=dp.graph.appendAndUpdate.scatter_plot)
+            #graph_ted.start()
+        elif graph_dec == "2":
+            x = input("What's your X-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+            if x == "HELP": 
+                print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+            x_axis = graph_axis[x]
+            y = input("What's your Y-Axis? (L1N, L2N, D1N, D2N, D3N, D4N, D5N, DO, BS, ES, ER, TTB, TR, HELP) : ")
+            if y == "HELP": 
+                print("L1N = Layer One Neurons \nL2N = Layer Two Neurons \nD1N = Dense 1 Neurons")
+            #y_axis = graph_axis[y]
+            #graph = dp.graph.scatter_plot(x_axis, y_axis)
+            #graph_ted = ted.Thread( graph, x_axis, y_axis, graph_axis[y], graph_axis[x], target=dp.graph.appendAndUpdate.scatter_plot)
+            #graph_ted.start()
                 
         elif decision == "8":
             clear()
@@ -368,7 +343,18 @@ def decision_picking():
                 pass
                 
        
-
+graph_axis = {
+    "L1N" : lstm_layer_one_units,
+    "L2N" : lstm_layer_two_units, 
+    "D1N" : denseone, 
+    "D2N" : densetwo, 
+    "D3N" : densethree,
+    "D4N" : densefour, 
+    "D5N" : densefive,
+    "DO" : dropout,
+    "BS" : batch_size,
+    "ES" : epoch_size,  
+}
 
 # Main program execution
 if __name__ == "__main__":
@@ -399,10 +385,12 @@ if __name__ == "__main__":
     dice = ted.Thread(target=decision_picking)
     start = time.perf_counter()
     # Keep the script running
-    while True
+    while True:
         schedule.run_pending()
         dice.start()
         if decision == "":
             pass
         clear()
         time.sleep(0.2)
+
+

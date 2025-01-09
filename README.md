@@ -22,7 +22,7 @@ Before running the project, make sure you have the following installed on your s
 ### 1. Clone the Repository
 
 ```
-git clone https://github.com/yourusername/yourrepository.git
+git clone https://github.com/arefermat/trader-v2.git
 cd yourrepository
 ```
 

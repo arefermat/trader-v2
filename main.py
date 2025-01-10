@@ -16,6 +16,7 @@ import threading as ted
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = "2.1.a"
 
+
 bought, sold, hold = 0
 
 # Alpaca API Credentials
@@ -27,13 +28,16 @@ BASE_URL = 'https://paper-api.alpaca.markets'
 api = tradeapi.REST(API_KEY, API_SECRET, BASE_URL, api_version='v2')
 denseone, densetwo, densethree, densefour, densefive = 0
 
+# Money and Stock Stats
 money = 100
 starting_money = money
 current_qty = 0
 
+# Clear the terminal
 def clear():
     os.system("cls")
 
+# Prep time data (look over, maybe delete)
 def time_functions():
     global timed
     seconds, minutes, hours = get_stats()
@@ -47,11 +51,11 @@ def time_functions():
 
 # Fetch all historical stock data for a given symbol
 def fetch_all_data(stock_symbol):
-    data = yf.download(stock_symbol, period='max', interval='1d')  # Fetch full history
-    data['SMA_20'] = data['Close'].rolling(window=20).mean()  # 20-day simple moving average
-    data['SMA_50'] = data['Close'].rolling(window=50).mean()  # 50-day simple moving average
-    data['RSI'] = compute_RSI(data['Close'], 14)  # 14-day RSI
-    return data.dropna()[['Close', 'SMA_20', 'SMA_50', 'RSI']]  # Remove NaNs
+    data = yf.download(stock_symbol, period='max', interval='1d')
+    data['SMA_20'] = data['Close'].rolling(window=20).mean()
+    data['SMA_50'] = data['Close'].rolling(window=50).mean()
+    data['RSI'] = compute_RSI(data['Close'], 14)
+    return data.dropna()[['Close', 'SMA_20', 'SMA_50', 'RSI']] 
 
 # Compute RSI (Relative Strength Index)
 def compute_RSI(data, window):
@@ -64,16 +68,16 @@ def compute_RSI(data, window):
 
 # Prepare the data for machine learning (LSTM)
 def prepare_full_data(data, time_step=60):
-    scaler = MinMaxScaler(feature_range=(0, 1))  # Scale data to [0, 1]
+    scaler = MinMaxScaler(feature_range=(0, 1))  # Scale data to [0, 1] for the model
     scaled_data = scaler.fit_transform(data)
     
     X, y = [], []
     for i in range(time_step, len(scaled_data)):
-        X.append(scaled_data[i-time_step:i, :])  # Last 60 time steps as input
+        X.append(scaled_data[i-time_step:i, :])
         if scaled_data[i, 0] > scaled_data[i-1, 0]:
-            y.append(1)  # Label as 'Buy' (1) if price is going up
+            y.append(1) 
         else:
-            y.append(0)  # Label as 'Sell' (0) if price is going down
+            y.append(0) 
 
     return np.array(X), np.array(y), scaler
 

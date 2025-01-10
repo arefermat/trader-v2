@@ -1,41 +1,41 @@
 # Stock Trading Bot with LSTM and Alpaca API
 
-This repository contains a stock trading bot that uses LSTM (Long Short-Term Memory) neural networks for predicting stock price movements and automates trading using Alpaca's paper trading API.
+This repository contains a stock trading bot that uses LSTM (Long Short-Term Memory) neural networks for predicting stock price movements and automates trading using Alpaca's trading API.
 
 ## Features
 
 - **Data Fetching**: Downloads historical stock data using Yahoo Finance (`yfinance`).
 - **Technical Indicators**: Computes simple moving averages (SMA) and relative strength index (RSI) for feature engineering.
-- **Machine Learning**: Uses LSTM neural networks for stock price prediction (buy/sell decisions).
-- **Alpaca API**: Automatically executes trades based on predictions on Alpaca's paper trading platform.
+- **Machine Learning**: Uses LSTM neural networks for stock price prediction (buy/hold/sell decisions).
+- **Alpaca API**: Automatically executes trades based on predictions on Alpaca's trading platform.
 
 ## Prerequisites
 
 Before running the project, make sure you have the following installed on your system:
 
-- Python 3.8 or higher
+- Python 3.8-3.11
 - Pip (Python package manager)
-- [Alpaca Paper Trading Account](https://alpaca.markets)
+- [Alpaca Trading Account](https://alpaca.markets)
 
 ## Getting Started
 
 ### 1. Clone the Repository
 
-```
+```bash
 git clone https://github.com/arefermat/trader-v2.git
-cd yourrepository
+cd trader-v2
 ```
 
 ### 2. Install Dependencies
 First, ensure you have all required dependencies by running the following command:
 
-```
+```bash
 pip install -r requirements.txt
 ```
 
 Alternatively, install these packages manually:
 
-```
+```bash
 pip install yfinance pandas numpy alpaca-trade-api tensorflow scikit-learn schedule keyboard
 ```
 
@@ -45,11 +45,13 @@ To access Alpaca's trading API, you'll need to provide your Alpaca API key and s
 Create a config.py file in the root directory.
 Add the following lines to your config.py:
 
+```python
+alpaca_api_key = ""
+alpaca_secret_api = ""
 ```
-alpaca_api_key = 'YOUR_ALPACA_API_KEY'
-alpaca_secret_api = 'YOUR_ALPACA_SECRET_KEY'
-```
-Replace 'YOUR_ALPACA_API_KEY' and 'YOUR_ALPACA_SECRET_KEY' with the actual credentials from your Alpaca account.
+Replace the empty strings with the actual credentials from your Alpaca account.
+
+To do this, go to Account Settings by clicking your profile Icon on the top-left of your screen. Then click Manage Accounts, and Generate New Keys (It is recommended that you use paper trading when testing this program).
 
 ### 4. Preparing to Run
 Once you have installed the required libraries and set up your Alpaca API credentials, you can proceed to run the script.
@@ -57,7 +59,7 @@ Once you have installed the required libraries and set up your Alpaca API creden
 ### 5. Running the Script
 To run the trading bot, execute:
 
-```
+```bash
 python trading_bot.py
 ```
 
@@ -65,6 +67,7 @@ python trading_bot.py
 When the script starts, it will prompt you to either train a new model or load an existing one:
 
 Train a new model: Enter "new" and provide the required hyperparameters (e.g., stock symbol, batch size, epoch size, etc.)
+For more explonations on what these parameters mean and do, please visit the help.txt file.
 Load an existing model: Enter "load" and specify the path to the saved model.
 
 ### 7. Automating Trades

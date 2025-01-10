@@ -392,5 +392,3 @@ if __name__ == "__main__":
             pass
         clear()
         time.sleep(0.2)
-
-

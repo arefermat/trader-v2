@@ -16,8 +16,8 @@ import threading as ted
 # .a and .b are Alpha and Beta extensions
 CURRENT_VERSION = "2.1.a"
 
-
-bought, sold, hold = 0
+# How many actions have been commited
+bought, sold = 0
 
 # Alpaca API Credentials
 API_KEY = config.alpaca_api_key
@@ -155,15 +155,12 @@ def predict_action(model, scaler, stock_symbol, error=0.3):
     # Predict (1: Buy, 0: Sell)
     action = model.predict(X_recent)
     
-    if action >= (0.5+error):
+    if action >= (1):
         bought += 1
         return 'buy'
-    elif action <= (0.5-error):
+    elif action <= (0):
         sold += 1
         return 'sell'
-    else:
-        hold += 1
-        return 'hold'
     
 
 def get_profit(money, starting_money):
@@ -178,7 +175,7 @@ def trade_based_on_prediction(stock_symbol, error):
     # Get current stock position
     try:
         position = api.get_position(stock_symbol)
-        current_qty = int(position.qty)
+        current_qty =+ int(position.qty)
     except Exception as e:
         current_qty = 0
     
